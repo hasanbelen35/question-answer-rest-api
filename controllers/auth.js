@@ -1,5 +1,5 @@
 const User = require("../schemas/user");
-const CustomError = require("../helpers/error/customError");
+const CustomError = require("../helpers/error/CustomError");
 const { sendJwtToClient } = require("../helpers/authorization/sendJwtToClient");
 const comparePassword = require("../helpers/authorization/hashedPasswordCompare");
 const sendEmail = require("../helpers/libs/sendEmail");
@@ -15,10 +15,8 @@ const register = async (req, res, next) => {
             return next(new CustomError("User could not be created", 500));
         }
 
-        // Kullanıcı oluşturuldu, JWT ile yanıt gönder
         sendJwtToClient(user, res);
     } catch (err) {
-        // Hataları bir sonraki middleware'e gönder
         next(err);
     }
 };

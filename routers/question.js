@@ -1,15 +1,14 @@
 const express = require("express");
-const { askNewQuestion, getAllQuestions, getSingleQuestion, editQuestion } = require("../controllers/question");
+const { askNewQuestion, getAllQuestions, getSingleQuestion, editQuestion, deleteQuestion } = require("../controllers/question");
 const questionRouter = express.Router();
 const { getAccessToRoute } = require("../middlewares/authorization/auth");
 const questionAccess = require("../middlewares/authorization/questioniaccess");
-// user routers
 
-questionRouter.post("/ask", getAccessToRoute, questionAccess, askNewQuestion);
+// User routers
+questionRouter.post("/ask", getAccessToRoute, askNewQuestion);
 questionRouter.get("/getAllQuestions", getAllQuestions);
 questionRouter.get("/getSingleQuestion/:id", getSingleQuestion);
-questionRouter.put("/editQuestion/:id", getAccessToRoute, questionAccess, editQuestion);
-
-
+questionRouter.put("/:id/edit", getAccessToRoute, questionAccess, editQuestion);
+questionRouter.put("/delete-question/:id", getAccessToRoute, questionAccess, deleteQuestion);
 
 module.exports = questionRouter;

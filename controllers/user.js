@@ -1,6 +1,5 @@
 const User = require("../schemas/user");
-const CustomError = require("../helpers/error/customError");
-
+const CustomError = require("../helpers/error/CustomError");
 const getSingleUser = async (req, res, next) => {
     const { id } = req.params;
 

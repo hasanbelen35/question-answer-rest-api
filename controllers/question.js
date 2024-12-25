@@ -1,5 +1,7 @@
 const CustomError = require("../helpers/error/CustomError");
 const Question = require("../schemas/question");
+
+// ASK NEW QUESTION
 const askNewQuestion = async (req, res, next) => {
     try {
         const { title, content } = req.body;
@@ -66,28 +68,59 @@ const getSingleQuestion = async (req, res, next) => {
 
 // EDIT QUESTION
 const editQuestion = async (req, res, next) => {
-   try {
-    const { id } = req.params;
-    const { title, content } = req.body;
+    try {
+        const { id } = req.params;
+        const { title, content } = req.body;
 
-    const question = await Question.findById(id);
+        let question = await Question.findById(id)
 
-    if (!question) {
-        return next(new CustomError("Question not found", 404));
-    };
+        if (!question) {
+            return next(new CustomError("Question not found", 404));
+        };
 
-    question.title = title;
-    question.content = content;
+        question.title = title;
+        question.content = content;
 
-    await question.save();
-   } catch (error) {
-    return next(new CustomError("Question could not be updated", 400));
-   }
-    
+        question = await question.save();
 
-    
- };
+        res.status(200)
+            .json({
+                success: true,
+                data: question
+            });
+
+    } catch (error) {
+        return next(new CustomError("Question could not be updated", 400));
+    }
+};
+
+const deleteQuestion = async (req, res, next) => {
+
+    try {
+        const { id } = req.params;
+
+        const question = await Question.findById(id);
+
+        if (!question) {
+            return next(new CustomError("Question not found", 404));
+        };
+
+        await question.remove();
+
+        res.status(200)
+            .json({
+                success: true,
+                message: "Question deleted successfully"
+            });
+
+    } catch (error) {
+        return next(new CustomError("Question could not be deleted", 400));
+    }
+
+
+};
+
 module.exports = {
     askNewQuestion, getAllQuestions,
-    getSingleQuestion, editQuestion
+    getSingleQuestion, editQuestion, deleteQuestion
 };

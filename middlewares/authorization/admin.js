@@ -1,9 +1,8 @@
 const User = require("../../schemas/user");
-const CustomError = require("../../helpers/error/customError");
-
+const CustomError = require("../../helpers/error/CustomError");
 const getAdminAccess = async (req, res, next) => {
     try {
-        const { id } = req.user; // req.user doğrulama sonrası eklenmiş olmalı
+        const { id } = req.user; 
         const user = await User.findById(id);
 
         if (!user) {
@@ -16,7 +15,7 @@ const getAdminAccess = async (req, res, next) => {
 
         next(); // Adminse, devam et
     } catch (error) {
-        return next(new CustomError("Server error", 500)); // Herhangi bir hata durumunda 500 döndür
+        return next(new CustomError("Server error", 500)); 
     }
 };
 

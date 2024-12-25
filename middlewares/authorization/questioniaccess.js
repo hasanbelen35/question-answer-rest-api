@@ -1,18 +1,24 @@
 const Question = require("../../schemas/question");
-const CustomError = require("../../helpers/error/customError");
+const CustomError = require("../../helpers/error/CustomError");
 
 const questionAccess = async (req, res, next) => {
-    const userId = req.user.id;
-    const questionId = req.params.id;
+    try {
+        const { id } = req.params;
+        const question = await Question.findById(id);
 
-    const question = await Question.findById(questionId);
-    if (!question) {
-        return next(new CustomError("Question not found", 404));
-    }
-    if (Question.user != userId) {
-        return next(new CustomError("Only owner can handle this operation", 403));
-    }
-    next();
-}
+        if (!question) {
+            return next(new CustomError("Question not found", 404));
+        }
 
-module.exports = questionAccess;    
+        // Soru sahibi kontrolü
+        if (question.user.toString() !== req.user.id) {
+            return next(new CustomError("Only owner can handle this operation", 403));
+        }
+
+        next(); 
+    } catch (error) {
+        return next(new CustomError("Authorization error", 403));
+    }
+};
+
+module.exports = questionAccess;

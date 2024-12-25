@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-const CustomError = require("../../helpers/error/customError");
 const { isTokenIncluded, getAccessTokenFromHeader } = require("../../helpers/authorization/sendJwtToClient");
+const CustomError = require("../../helpers/error/CustomError");
 
 const getAccessToRoute = (req, res, next) => {
     const { JWT_SECRET_KEY } = process.env;
