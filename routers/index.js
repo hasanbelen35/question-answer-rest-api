@@ -5,6 +5,8 @@ const authRouter = require("./auth");
 const userRouter = require("./user");
 const adminRouter = require("./admin");
 const questionRouter = require("./question");
+
+// ROUTES
 router.use("/auth", authRouter);
 router.use("/question", questionRouter);
 

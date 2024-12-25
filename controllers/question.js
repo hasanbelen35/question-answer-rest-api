@@ -1,6 +1,6 @@
 const CustomError = require("../helpers/error/CustomError");
 const Question = require("../schemas/question");
-
+const mongoose = require("mongoose");
 // ASK NEW QUESTION
 const askNewQuestion = async (req, res, next) => {
     try {
@@ -105,7 +105,7 @@ const deleteQuestion = async (req, res, next) => {
             return next(new CustomError("Question not found", 404));
         };
 
-        await question.remove();
+        await Question.findByIdAndDelete(id);
 
         res.status(200)
             .json({
@@ -120,7 +120,68 @@ const deleteQuestion = async (req, res, next) => {
 
 };
 
+// LIKE QUESTION
+const likeQuestion = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const question = await Question.findById(id);
+
+        if (!question) {
+            return next(new CustomError("Question not found", 404));
+        }
+
+
+        if (question.likes.includes(req.user.id)) {
+            return next(new CustomError("You already liked this question", 400));
+        }
+
+        // Add user ID to likes array
+        question.likes.push(req.user.id);
+
+        await question.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Question liked successfully"
+        });
+
+    } catch (error) {
+        console.error(error);
+        return next(new CustomError("Question could not be liked", 400));
+    }
+};
+// DISLIKE QUESTION
+const dislikeQuestion = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const question = await Question.findById(id);
+        if (!question) {
+            return next(new CustomError("Question not found", 404));
+        };
+
+        if (!question.likes.includes(req.user.id)) {
+            return next(new CustomError("You have not liked this question yet", 400));
+        };
+
+        await question.likes.remove(req.user.id);
+
+        await question.save();
+
+        res.status(200)
+            .json({
+                success: true,
+                message: "Question disliked successfully"
+            });
+    } catch (error) {
+        return next(new CustomError("Question could not be disliked", 400));
+    }
+};
+
+
+
 module.exports = {
     askNewQuestion, getAllQuestions,
-    getSingleQuestion, editQuestion, deleteQuestion
+    getSingleQuestion, editQuestion, deleteQuestion, likeQuestion, dislikeQuestion
 };

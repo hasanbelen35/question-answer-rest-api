@@ -3,8 +3,9 @@ const { Schema } = mongoose;
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const Question = require("./question"); 
 
-// USER SCHEAMA
+// USER SCHEMA
 const UserSchema = new Schema({
     name: {
         type: String,
@@ -51,27 +52,25 @@ const UserSchema = new Schema({
     }
 });
 
-// Şifreyi hashlemek için middleware
+// PASSWORD HASHING BEFORE SAVE
 UserSchema.pre("save", async function (next) {
     const user = this;
 
-    // Eğer şifre değiştirilmediyse hashleme
     if (!user.isModified("password")) {
         return next();
     }
 
     try {
-        // Salt üret
         const salt = await bcrypt.genSalt(10);
-        // Şifreyi hashle
         user.password = await bcrypt.hash(user.password, salt);
         next();
     } catch (err) {
+        console.error("Error hashing password: ", err);
         next(err);
     }
 });
 
-// RESET PASSWORD PROCESS
+// RESET PASSWORD TOKEN GENERATION
 UserSchema.methods.getResetPasswordTokenFromUser = function () {
     const hexcode = crypto.randomBytes(15).toString("hex");
     const { RESET_PASSWORD_EXPIRE } = process.env;
@@ -81,9 +80,9 @@ UserSchema.methods.getResetPasswordTokenFromUser = function () {
     this.resetPasswordExpire = Date.now() + parseInt(RESET_PASSWORD_EXPIRE);
 
     return resetPasswordToken;
-}
+};
 
-// GENERATE JWT 
+// JWT GENERATION
 UserSchema.methods.generateJwtFromUser = function () {
     const { JWT_EXPIRE, JWT_SECRET_KEY } = process.env;
 
@@ -99,9 +98,16 @@ UserSchema.methods.generateJwtFromUser = function () {
     return token;
 };
 
-// Şifre doğrulama fonksiyonu
+// COMPARE PASSWORD
 UserSchema.methods.comparePassword = async function (candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
+
+// DELETE ASSOCIATED QUESTIONS AFTER USER IS REMOVED
+UserSchema.post("remove", async function() {
+    await Question.deleteMany({
+        user: this._id
+    });
+});
 
 module.exports = mongoose.model("User", UserSchema);

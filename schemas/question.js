@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { default: slugify } = require("slugify");
 const { Schema } = mongoose;
 
+// QUESTION SCHEMA
 const QuestionScheama = new Schema({
     title: {
         type: String,
@@ -16,13 +17,19 @@ const QuestionScheama = new Schema({
     },
     slug: String,
 
-    user: {
+    likes: [{
+        type: mongoose.Schema.ObjectId,
+        ref: "User"
+    }],
+        user: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
         required: true
     },
 
 });
+
+// SLUG GENERATE
 QuestionScheama.pre("save", function (next) {
     if (!this.isModified("title")) {
         next();
