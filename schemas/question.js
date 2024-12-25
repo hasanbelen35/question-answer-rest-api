@@ -21,7 +21,11 @@ const QuestionScheama = new Schema({
         type: mongoose.Schema.ObjectId,
         ref: "User"
     }],
-        user: {
+    answers: [{
+        type: mongoose.Schema.ObjectId,
+        ref: "Answer"
+    }],
+    user: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
         required: true

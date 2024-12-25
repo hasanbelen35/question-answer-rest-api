@@ -3,6 +3,7 @@ const { askNewQuestion, getAllQuestions, getSingleQuestion, editQuestion, delete
 const questionRouter = express.Router();
 const { getAccessToRoute } = require("../middlewares/authorization/auth");
 const questionAccess = require("../middlewares/authorization/questioniaccess");
+const answerRouter = require("./answers");
 
 //QUESTION ROUTES
 questionRouter.post("/ask", getAccessToRoute, askNewQuestion);
@@ -13,4 +14,5 @@ questionRouter.delete("/delete-question/:id", getAccessToRoute, questionAccess, 
 questionRouter.get("/like/:id", getAccessToRoute, likeQuestion);
 questionRouter.get("/dislike/:id", getAccessToRoute, dislikeQuestion);
 
+questionRouter.use("/:id/answers", answerRouter);  
 module.exports = questionRouter;
