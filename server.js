@@ -6,10 +6,22 @@ const connectDB = require("./database/db");
 const router = require("./routers/index");
 const customErrorHandler = require("./middlewares/errors/customErrorHandler");
 const cookieParser = require("cookie-parser");
+const cors = require('cors');
 
 dotenv.config();
 const port = process.env.PORT || 5000;
 
+// CORS ayarları
+const corsOptions = {
+    origin: 'http://localhost:5173',  
+    methods: 'GET,POST,PUT,DELETE',  
+    credentials: true,  
+  };
+  
+  // CORS'u kullanmak için
+  app.use(cors(corsOptions));
+
+  
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
