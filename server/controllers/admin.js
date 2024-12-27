@@ -1,5 +1,5 @@
 const User = require("../schemas/user");
-const CustomError = require("../helpers/error/customError");
+const CustomError = require("../helpers/error/CustomError");
 
 const adminPage = (req, res) => {
     res.status(200).json({
