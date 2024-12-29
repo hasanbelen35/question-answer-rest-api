@@ -21,9 +21,8 @@ const sendJwtToClient = (user, res) => {
 };
 
 const isTokenIncluded = req => {
-    return (
-        req.headers.authorization && req.headers.authorization.startsWith("Bearer ")
-    );
+    // Token'ı cookies içinde kontrol et
+    return req.cookies && req.cookies["access-token"];
 };
 
 const getAccessTokenFromHeader = (req) => {
